@@ -21,7 +21,7 @@ ESP32Time rtc(0);
 //#################### EDIT THIS  ###################
 //time zone  
 int zone = 2;
-String town = "YourWeahterLocation"; // desired location must be available on https://openweathermap.org/ 
+String town = "YourWeatherLocation"; // desired location must be available on https://openweathermap.org/ 
 String myAPI = "YourOpenWeatherAPI";
 String units = "metric";  //  metric, imperial
 //#################### end of edits ###################
@@ -50,7 +50,7 @@ const int backlight[5] = {10, 30, 60, 120, 220};
 
 // static strings of data showed on right side 
 char* PPlbl[] = { "HUM", "PRESS", "WIND" };
-String PPlblU[] = { "%", "hPa", "m/s" };
+String PPlblU[] = { " %", " hPa", " m/s" };
 
 //data that changes
 float temperature = 22.2;
