@@ -1,6 +1,6 @@
 # Weather Station LilyGo T-Display S3 by AussiSG
 
-I have modified the original code to make it work with the latest ESP32 board library (V3.x) , older library is still supported (v2.x).
+I have modified the original code to make it work with the latest ESP32 board library (V3.x) , also the older library is still supported (v2.x).
 Added a feature to change the brightness of the screen with the right button / button 2.
 And moved the temperature symbol to the right side of the screen, which feels more logic to me.
 
