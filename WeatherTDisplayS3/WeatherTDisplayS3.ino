@@ -3,12 +3,15 @@
 #include <ArduinoJson.h> // 7.1.0
 #include <HTTPClient.h> // https://github.com/arduino-libraries/ArduinoHttpClient   version 0.6.1
 #include <ESP32Time.h>  // https://github.com/fbiego/ESP32Time  verison 2.0.6
+#include <pins_arduino.h>
+
 #include "NotoSansBold15.h"
 #include "tinyFont.h"
 #include "smallFont.h"
 #include "midleFont.h"
 #include "bigFont.h"
 #include "font18.h"
+
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite errSprite = TFT_eSprite(&tft);
@@ -18,8 +21,8 @@ ESP32Time rtc(0);
 //#################### EDIT THIS  ###################
 //time zone  
 int zone = 2;
-String town = "Zagreb";
-String myAPI = "d0d0bf1bb46822e5dce67c95f4fd0800";
+String town = "YourWeatherLocation";
+String myAPI = "YourOpenWeatherAPI";
 String units = "metric";  //  metric, imperial
 //#################### end of edits ###################
 
@@ -39,6 +42,12 @@ int counter=0;
 #define bck TFT_BLACK
 unsigned short grays[13];
 
+//screen + backlight
+const int pwmFreq = 10000;
+const int pwmResolution = 8;
+const int pwmLedChannelTFT = 0;
+const int backlight[5] = {10, 30, 60, 120, 220};
+
 // static strings of data showed on right side 
 char* PPlbl[] = { "HUM", "PRESS", "WIND" };
 String PPlblU[] = { "%", "hPa", "m/s" };
@@ -49,7 +58,9 @@ float wData[3];
 float PPpower[24] = {};    //graph
 float PPpowerT[24] = {};   //graph
 int PPgraph[24] = { 0 };   //graph
-
+int press1 = 0;
+int press2 = 0;
+byte curBright = 1;
 
 //scroling message on bottom right side
 String Wmsg = "";
@@ -64,7 +75,9 @@ void setTime() {
 
 void setup() {
 
-
+  // physical buttons
+  pinMode(BUTTON_1, INPUT_PULLUP);
+  pinMode(BUTTON_2, INPUT_PULLUP);
 
   // using this board can work on battery
   pinMode(15,OUTPUT);
@@ -78,16 +91,21 @@ void setup() {
   errSprite.createSprite(164, 15);
 
 
-  //set brightness
-  ledcSetup(0, 10000, 8);
-  ledcAttachPin(38, 0);
-  ledcWrite(0, 130);
+  ////set brightness
+  #if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+    ledcSetup(pwmLedChannelTFT, pwmFreq, pwmResolution);
+    ledcAttachPin(TFT_BL, pwmLedChannelTFT);
+    ledcWrite(pwmLedChannelTFT, backlight[curBright]);
+  #else
+    ledcAttach(TFT_BL, pwmFreq, pwmResolution);
+    ledcWrite(TFT_BL, backlight[curBright]);
+  #endif
 
   //connect board to wifi , if cant, esp32 will make wifi network, connect to that network with password "password"
   WiFiManager wifiManager;
   wifiManager.setConfigPortalTimeout(5000);
 
-  if (!wifiManager.autoConnect("VolosWifiConf", "password")) {
+  if (!wifiManager.autoConnect("S3WeatherStation", "password")) {
     Serial.println("Failed to connect and hit timeout");
     delay(3000);
     ESP.restart();
@@ -169,14 +187,14 @@ void draw() {
   sprite.drawString("TOWN:", 6, 110);
   sprite.setTextColor(grays[2], TFT_BLACK);
   if (units == "metric")
-    sprite.drawString("C", 14, 50);
+    sprite.drawString("C", 124, 50);
   if (units == "imperial")
-    sprite.drawString("F", 14, 50);
+    sprite.drawString("F", 124, 50);
 
  
   sprite.setTextColor(grays[3], TFT_BLACK);
   sprite.drawString(town, 46, 110);
-  sprite.fillCircle(8, 52, 2, grays[2]);
+  sprite.fillCircle(118, 52, 2, grays[2]);
   sprite.unloadFont();
 
   // draw wime without seconds
@@ -254,10 +272,16 @@ void draw() {
     errSprite.pushToSprite(&sprite, 148, 150);
   }
   sprite.setTextColor(grays[4], bck);
-  sprite.drawString("CURRENT WEATHER", 190, 141);
-  sprite.setTextColor(grays[9], bck);
-   sprite.drawString(String(counter), 310, 141);
+  sprite.drawString("CURR. WEATHER", 190, 141);
 
+  sprite.setTextColor(grays[4], bck);
+  sprite.drawString("BRIGHT:", 260, 141);
+ // sprite.setTextColor(grays[9], bck);
+ //  sprite.drawString(String(counter), 310, 141);
+  
+  for(int i = 0; i <= curBright; i++)
+    sprite.fillRect(280 + (i * 7), 135, 3, 10, TFT_WHITE);
+  
   sprite.pushSprite(0, 0);
 }
 
@@ -270,7 +294,32 @@ void updateData() {
     ani = 100;
 
 
-  //
+  if (digitalRead(BUTTON_2) == 0) {
+      if (press2 < 5)
+          press2++;
+      else if (press2 == 5) {  // turn off back light of TFT
+          press2++;
+  #if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+              ledcWrite(pwmLedChannelTFT, 0);
+  #else
+              ledcWrite(TFT_BL, 0);
+  #endif
+          }
+      }
+    else if (press2 > 0) {
+        if (press2 < 5) {
+            sprite.fillRect(280, 135, 44, 12, TFT_BLACK);
+            if(++curBright == 5) curBright = 0;
+            for(int i = 0; i <= curBright; i++)
+               sprite.fillRect(280 + (i * 7), 135, 3, 10, TFT_WHITE);
+  #if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+              ledcWrite(pwmLedChannelTFT, backlight[curBright]);
+  #else
+              ledcWrite(TFT_BL, backlight[curBright]);
+  #endif
+          }
+          press2 = 0;
+      }
 
   if (millis() > timePased + 180000) {
     timePased = millis();
