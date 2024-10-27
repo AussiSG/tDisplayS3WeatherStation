@@ -11,6 +11,7 @@ And moved the temperature symbol to the right side of the screen, which feels mo
 2. Open with Arduino IDE or Visual Studio Code with extensions vscode-arduino extension and vscode-cpptools.
 
 3. Use Lilygo T-Display S3 as board choice.
+   
 ![image](https://github.com/user-attachments/assets/9c319b57-ca42-438f-93cc-b18de6999281).
 
 5. Setup board information according Lilygo github [LilyGO T-Display S3](https://github.com/Xinyuan-LilyGO/T-Display-S3)
@@ -21,6 +22,7 @@ And moved the temperature symbol to the right side of the screen, which feels mo
 7. Get your free API Key from https://openweathermap.org/.
 
 8. Change info in the .ino file approx. from row 22.
+   
 ![image](https://github.com/user-attachments/assets/1e47ff4b-fd5c-4c0c-87ad-32cff8ab648a)
 
 10. Download it to your T-Display S3 after download connect to local AP 'S3WeatherStation' with password: 'password'.
