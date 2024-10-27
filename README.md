@@ -27,9 +27,11 @@ And moved the temperature symbol to the right side of the screen, which feels mo
 
 10. Download it to your T-Display S3 after download connect to local AP 'S3WeatherStation' with password: 'password'.
 
-11. Connect to your desired WiFi Connection.
+11. Connect to your desired WiFi Connection, this will be done in the browser after connecting to the AP.
 
-12. Enjoy :)
+12. Don't forget to reboot the device after all installations.
+
+13. Enjoy :)
 
 # Credits
 
