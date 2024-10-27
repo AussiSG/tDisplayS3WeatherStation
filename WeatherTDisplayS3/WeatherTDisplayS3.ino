@@ -21,7 +21,7 @@ ESP32Time rtc(0);
 //#################### EDIT THIS  ###################
 //time zone  
 int zone = 2;
-String town = "YourWeatherLocation";
+String town = "YourWeahterLocation"; // desired location must be available on https://openweathermap.org/ 
 String myAPI = "YourOpenWeatherAPI";
 String units = "metric";  //  metric, imperial
 //#################### end of edits ###################
@@ -186,6 +186,7 @@ void draw() {
   sprite.setTextColor(grays[7], TFT_BLACK);
   sprite.drawString("TOWN:", 6, 110);
   sprite.setTextColor(grays[2], TFT_BLACK);
+  sprite.fillCircle(118, 52, 2, grays[2]);
   if (units == "metric")
     sprite.drawString("C", 124, 50);
   if (units == "imperial")
@@ -194,12 +195,11 @@ void draw() {
  
   sprite.setTextColor(grays[3], TFT_BLACK);
   sprite.drawString(town, 46, 110);
-  sprite.fillCircle(118, 52, 2, grays[2]);
   sprite.unloadFont();
 
-  // draw wime without seconds
+  // draw time without seconds
   sprite.loadFont(tinyFont);
-  sprite.setTextColor(grays[4], TFT_BLACK);
+  sprite.setTextColor(grays[0], TFT_BLACK);
   sprite.drawString(rtc.getTime().substring(0, 5), 6, 132);
   sprite.unloadFont();
 
@@ -255,7 +255,11 @@ void draw() {
 
   sprite.loadFont(font18);
   sprite.setTextColor(grays[7], grays[10]);
-  sprite.drawString("T", 158, 58);
+  sprite.fillCircle(152, 52, 2, grays[7]);
+  if (units == "metric")
+    sprite.drawString("C", 160, 58);
+  if (units == "imperial")
+    sprite.drawString("F", 160, 58);
   sprite.unloadFont();
 
 
