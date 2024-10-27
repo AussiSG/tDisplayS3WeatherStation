@@ -23,7 +23,11 @@ And moved the temperature symbol to the right side of the screen, which feels mo
 
 8. Change info in the .ino file approx. from row 22.
    
-![image](https://github.com/user-attachments/assets/1e47ff4b-fd5c-4c0c-87ad-32cff8ab648a)
+![image](https://github.com/user-attachments/assets/05a6408d-0f84-4f0a-923f-fbcc94c31206)
+
+Location needs to be available on OpenWeatherMap.org
+
+![image](https://github.com/user-attachments/assets/93e479bb-7626-4df8-8752-e2f54a796424)
 
 10. Download it to your T-Display S3 after download connect to local AP 'S3WeatherStation' with password: 'password'.
 
